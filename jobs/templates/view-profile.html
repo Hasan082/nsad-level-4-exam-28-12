@@ -1,0 +1,187 @@
+{% extends 'dash-back.html' %}
+
+{% block title %}
+  Profile | Job Board
+{% endblock %}
+
+{% block dash %}
+  <div class="container-fluid py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <!-- Profile Header Card -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-md">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-2">
+                  <div>
+                    <h3 class="mb-1">{{ user.display_name|default:user.username }}</h3>
+                    <p class="text-muted mb-2">
+                      <i class="bi bi-envelope me-1"></i>{{ user.email }}
+                    </p>
+                    <span class="badge bg-info text-white text-capitalize px-2 py-1">{{ user.user_type }}</span>
+                  </div>
+                  <div class="mt-3 mt-sm-0">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Details Card -->
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Profile Information</h5>
+          </div>
+          <div class="card-body p-4">
+            {% if user.user_type == 'recruiters' %}
+              <div class="row g-4">
+                <!-- Company info -->
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-building text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Company Name</small>
+                      <strong>{{ profile.company_name|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-globe text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Website</small>
+                      {% if profile.company_website %}
+                        <a href="{{ profile.company_website }}" target="_blank" class="text-decoration-none">
+                          {{ profile.company_website }} <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                        </a>
+                      {% else %}
+                        <strong>Not provided</strong>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-telephone text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Phone Number</small>
+                      <strong>{{ profile.company_phone|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-geo-alt text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Location</small>
+                      <strong>{{ profile.location|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="row g-4">
+                <!-- Jobseeker info -->
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-briefcase text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Job Title</small>
+                      <strong>{{ profile.title|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-star text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Skills</small>
+                      <strong>{{ profile.skill|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3"></div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Experience</small>
+                      {% if profile.years_of_experience is not None %}
+                        <strong>{{ profile.years_of_experience }} year{% if profile.years_of_experience != 1 %}s{% endif %}</strong>
+                      {% else %}
+                        <strong>Not provided</strong>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-telephone text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Phone Number</small>
+                      <strong>{{ profile.phone|default:'Not provided' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-light rounded p-2 me-3">
+                      <i class="bi bi-file-earmark-text text-primary fs-5"></i>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block mb-1">Resume</small>
+                      {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i>View Resume</a>
+                      {% else %}
+                        <strong>Not uploaded</strong>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if user.is_jobseeker %}
+          <!-- Bio Card -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+              <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2 text-primary"></i>About Me</h5>
+            </div>
+            <div class="card-body p-4">
+              {% if profile.bio %}
+                <p class="mb-0 text-secondary" style="line-height:1.8;">{{ profile.bio }}</p>
+              {% else %}
+                <p class="text-muted mb-0 fst-italic"><i class="bi bi-info-circle me-2"></i>No bio added yet. Click "Edit Profile" to add information about yourself.</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

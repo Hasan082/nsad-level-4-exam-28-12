@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      {% block title %}
+        Dashboard
+      {% endblock %}
+    </title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'job_lists' %}">Joab Board</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-end" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ user.display_name|default:user.username }}</a>
+              <ul class="dropdown-menu dropdown-menu-end bg-white text-dark">
+                <li>
+                  <a class="dropdown-item" href="{% url 'view_profile' %}">My Profile</a>
+                </li>
+                <li>
+                  <form action="{% url 'logout' %}" method="post" novalidate>
+                    {% csrf_token %}
+                    <button class="dropdown-item" type="submit">Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <aside class="col-12 col-md-3 col-lg-2 bg-light border-end vh-100 p-3">
+          <h5 class="mb-3">Menu</h5>
+          <ul class="nav nav-pills flex-column">
+            {% if user.is_authenticated and user.user_type == 'recruiters' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter_job' %}">My Jobs</a>
+
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'create_job' %}">Post Job</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'my_applicants' %}">My Applicants</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="">Skill Matched Applicants</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'seeker_matching_job' %}">Skill Mathcing Jobs</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'seeker_job' %}">My Applications</a>
+              </li>
+            {% endif %}
+          </ul>
+        </aside>
+
+        <main class="col-12 col-md-9 col-lg-10 p-4">
+          {% block dash %}
+          {% endblock %}
+        </main>
+      </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

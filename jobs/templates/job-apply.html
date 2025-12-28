@@ -1,0 +1,107 @@
+{% extends 'dash-back.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Apply for Job | Job Board
+{% endblock %}
+
+{% block dash %}
+  <div class="container-fluid py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title mb-3">Apply for: <span class="fw-bold">{{ job.title }}</span></h3>
+            <div class="mb-3">
+              <span class="badge bg-info me-2">{{ job.category|default:'General' }}</span>
+              <span class="badge bg-secondary me-2">Openings: {{ job.number_opening }}</span>
+              <span class="badge bg-primary">{{ job.skill_required|default:'Any' }}</span>
+              <span class="badge {% if job.is_active %}
+                  bg-success
+                {% else %}
+                  bg-danger
+                {% endif %} ms-2">
+                {{ job.is_active|yesno:'Active,Inactive' }}
+              </span>
+            </div>
+            <div class="mb-3">
+              <strong>Posted by:</strong> {{ job.recruiter.company_name|default:job.recruiter.user.display_name }}
+            </div>
+            <div class="mb-4">
+              <strong>Description:</strong>
+              <p class="text-muted">{{ job.description }}</p>
+            </div>
+
+            {% if not already_applied %}
+              <div class="border rounded p-3 mb-3 bg-light">
+                <h5 class="mb-3">Your Application</h5>
+                <form method="post" enctype="multipart/form-data" novalidate>
+                  {% csrf_token %}
+                  {{ form|crispy }}
+                  <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'job_lists' %}" class="btn btn-outline-secondary">Back to Jobs</a>
+                    <button type="submit" class="btn btn-primary">Apply Now</button>
+                  </div>
+                </form>
+              </div>
+            {% else %}
+              <!-- Show application details -->
+              <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white py-3">
+                  <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Application Submitted</h5>
+                </div>
+                <div class="card-body p-4">
+                  <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    You have already applied for this position on {{ application.applied_at|date:'F d, Y' }}
+                  </div>
+
+                  <h5 class="mb-3">Your Application Details</h5>
+
+                  <!-- Cover Letter -->
+                  <div class="mb-4">
+                    <h6 class="text-muted mb-2"><i class="bi bi-file-text me-2"></i>Cover Letter:</h6>
+                    {% if application.cover_letter %}
+                      <div class="bg-light p-3 rounded">
+                        <p class="mb-0" style="white-space: pre-wrap;">{{ application.cover_letter }}</p>
+                      </div>
+                    {% else %}
+                      <p class="text-muted fst-italic">No cover letter provided</p>
+                    {% endif %}
+                  </div>
+
+                  <!-- Resume -->
+                  <div class="mb-4">
+                    <h6 class="text-muted mb-2"><i class="bi bi-file-earmark-pdf me-2"></i>Resume:</h6>
+                    {% if application.resume %}
+                      <a href="{{ application.resume.url }}" target="_blank" class="btn btn-outline-primary"><i class="bi bi-download me-2"></i>View/Download Resume</a>
+                    {% else %}
+                      <p class="text-muted fst-italic">No resume attached</p>
+                    {% endif %}
+                  </div>
+
+                  <!-- Application Status -->
+                  <div class="mb-4">
+                    <h6 class="text-muted mb-2"><i class="bi bi-hourglass-split me-2"></i>Application Status:</h6>
+                    {% if application.status == 'applied' %}
+                      <span class="badge bg-primary px-3 py-2"><i class="bi bi-clock me-1"></i>Under Review</span>
+                    {% elif application.status == 'shortlisted' %}
+                      <span class="badge bg-success px-3 py-2"><i class="bi bi-star me-1"></i>Shortlisted</span>
+                    {% elif application.status == 'rejected' %}
+                      <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-circle me-1"></i>Not Selected</span>
+                    {% endif %}
+                  </div>
+
+                  <div class="text-center mt-4">
+                    <a href="{% url 'seeker_job' %}" class="btn btn-primary btn-lg"><i class="bi bi-speedometer2 me-2"></i>Go to My Applcation</a>
+                    <a href="{% url 'job_lists' %}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-briefcase me-2"></i>Browse More Jobs</a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

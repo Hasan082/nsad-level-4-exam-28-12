@@ -1,0 +1,168 @@
+{% extends 'dash-back.html' %}
+{% block title %}
+  Applicants List | Job Board
+{% endblock %}
+{% block dash %}
+  <div class="container-fluid py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <h4 class="card-title mb-4">Applicants List</h4>
+              <div class="text-end">
+                <div class="d-flex gap-2 mb-3">
+                  <a href="?filter=all"
+                    class="btn {% if filter_type == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All Applicants
+                  </a>
+
+                  <a href="?filter=matched"
+                    class="btn {% if filter_type == 'matched' %}btn-success{% else %}btn-outline-success{% endif %}">
+                    Matched Applicants
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% if applicants %}
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Id</th>
+                      <th>Job Title</th>
+                      <th>Applicant Name</th>
+                      <th>Matched %</th>
+                      <th>Applied On</th>
+                      <th class="text-center">View Applicant</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for app in applicants %}
+                      <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ app.job.title }}</td>
+                        <td>{{ app.applicant.user.display_name }}</td>
+                        <td>{{ app.match_percent }}%</td>
+                        <td>{{ app.applied_at|date:'M d, Y' }}</td>
+                        <td class="text-center">
+                          <!-- Button trigger modal -->
+                          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#applicationmodal-{{ app.id }}">👁</button>
+
+                          <!-- Modal -->
+                          <div class="modal fade" id="applicationmodal-{{ app.id }}" tabindex="-1" aria-labelledby="applicationModleLabel-{{ app.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                              <div class="modal-content border-0 shadow-lg">
+                                <div class="modal-header bg-primary text-white">
+                                  <div>
+                                    <h5 class="modal-title mb-0" id="applicationModleLabel-{{ app.id }}">Application for <span class="fw-bold">{{ app.job.title }}</span></h5>
+                                    <small class="text-white-50">Applied on {{ app.applied_at|date:'M d, Y' }}</small>
+                                  </div>
+                                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body bg-light">
+                                  <div class="row g-3">
+                                    <div class="col-md-6">
+                                      <div class="d-flex align-items-center mb-2">
+                                        <div class="avatar bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;font-size:1.5rem;">
+                                          <span>{{ app.applicant.user.display_name|slice:':1'|upper }}</span>
+                                        </div>
+                                        <div>
+                                          <h5 class="mb-0">{{ app.applicant.user.display_name }}</h5>
+                                          <span class="badge bg-primary me-1">{{ app.applicant.title|default:'—' }}</span>
+                                          <span class="badge bg-info">{{ app.applicant.skill|default:'—' }}</span>
+                                        </div>
+                                      </div>
+                                      <div class="text-start ps-5 ms-3">
+                                        <p class="mb-1">
+                                          <b>Phone:</b> {{ app.applicant.phone|default:'—' }}
+                                        </p>
+                                        <p class="mb-1">
+                                          <b>Experience:</b> {{ app.applicant.years_of_experience|default:'—' }} years
+                                        </p>
+                                        <p class="mb-1">
+                                          <b>Status:</b>
+                                          <span class="badge {% if app.status == 'applied' %}
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              bg-primary
+
+
+
+
+
+
+                                            {% elif app.status == 'shortlisted' %}
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              bg-success
+
+
+
+
+
+
+                                            {% else %}
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              
+                                              bg-danger
+
+
+
+
+
+
+                                            {% endif %}">
+                                            {{ app.get_status_display }}
+                                          </span>
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div class="mb-3 text-start">
+                                        <h6 class="fw-bold">Cover Letter</h6>
+                                        <div class="border rounded p-2 bg-white small" style="min-height:80px;max-height:200px;overflow-y:auto;">{{ app.cover_letter|default:'No cover letter provided.' }}</div>
+                                      </div>
+                                      <div>
+                                        {% if app.resume %}
+                                          <a class="btn btn-outline-success w-100" href="{{ app.resume.url }}" target="_blank">View Resume</a>
+                                        {% else %}
+                                          <span class="text-muted">No resume uploaded.</span>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="modal-footer bg-white border-0">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="alert alert-info mb-0">No applicants found for this job.</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

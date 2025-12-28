@@ -1,0 +1,80 @@
+{% extends 'dash-back.html' %}
+
+{% block title %}My Jobs | Job Board{% endblock %}
+
+{% block dash %}
+  <div class="container-fluid py-4">
+    <div class="row">
+      {% include 'partials/alert.html' %}
+
+      <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">My Jobs</h4>
+        <a class="btn btn-sm btn-primary" href="{% url 'create_job' %}">Post New Job</a>
+      </div>
+
+      <div class="col-12">
+        {% if my_jobs and my_jobs|length > 0 %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Skill Required</th>
+                  <th scope="col">Opening</th>
+                  <th scope="col">Applicant No</th>
+                  <th scope="col">Posted</th>
+                  <th scope="col" class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for job in my_jobs %}
+                  <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                      <div class="fw-semibold">{{ job.title }}</div>
+                      <div class="text-muted small">{{ job.short_description|default:job.description|truncatechars:50 }}</div>
+                    </td>
+                    <td>{{ job.category }}</td>
+                    <td>{{ job.skill_required|default:'—' }}</td>
+                    <td>{{ job.number_opening }}</td>
+                    <td>{{ job.applicant_count }}</td>
+                    <td class="text-muted small">{{ job.created_at|date:'M j, Y' }}</td>
+                    <td class="text-end">
+
+                      <a href="{% url 'edit_job' job.id %}" class="btn btn-sm py-1 btn-outline-primary me-2 d-inline-flex align-items-center justify-content-center py-0" aria-label="Edit job {{ job.title }}">
+                        <svg class="align-middle" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M12.146 0.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708L4.207 15.5H1v-3.207L12.146.146zM11.207 2.5L13.5 4.793 12.207 6.086 9.914 3.793 11.207 2.5zM2 13l8.5-8.5L12 5l-8 8H2v0z" />
+                        </svg>
+                        <span class="visually-hidden">Edit</span>
+                      </a>
+                      <form method="post" action="{% url 'delete_job' job.id %}" class="d-inline" onsubmit="return confirm('Delete this job?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="job_id" value="{{ job.id }}" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger py-1 d-inline-flex align-items-center justify-content-center py-0" aria-label="Delete job {{ job.title }}">
+                          <svg class="align-middle" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M5.5 5.5v7h1v-7h-1zm3 0v7h1v-7h-1z" />
+                            <path d="M14 3h-3.5l-1-1h-5l-1 1H2v1h12V3zM4.118 4 4.5 14h7l.382-10H4.118z" />
+                          </svg>
+                          <span class="visually-hidden">Delete</span>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          
+        {% else %}
+          <div class="alert alert-info">
+            You have not posted any jobs yet. <a href="{% url 'create_job' %}">Post a job</a>.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
